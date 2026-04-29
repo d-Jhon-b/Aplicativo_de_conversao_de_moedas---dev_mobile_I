@@ -1,11 +1,37 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet,View, Text, TextInput, Button, Image} from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { useState } from 'react';
+
+
 
 export default function App() {
+
+  
+
+  const [valorInserido, setValorInserido] = useState('')
+  
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <View>
+        <Picker>
+          <Picker.Item></Picker.Item>
+        </Picker>
+
+      </View>
+      
+      
+      <TextInput 
+        placeholder='Insira o valor para conversão (ex: 00.00)'
+        onChangeText={(texto)=>{
+          const valorLimpo = texto.replace(/[^0-9]/g, '');
+          setValorInserido(valorLimpo)
+        }}
+        keyboardType="numeric"
+        value={valorInserido}
+      />
+
     </View>
   );
 }
