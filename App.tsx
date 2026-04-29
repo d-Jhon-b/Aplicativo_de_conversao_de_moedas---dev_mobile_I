@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Image } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
+import React, { useState } from 'react';
 import { catalogo } from './src/moedas';
 import { converter } from './src/services/converterValor';
 
@@ -14,21 +14,21 @@ export default function App() {
   const [historico, setHistorico] = useState<string[]>([]);
 
   const handleConverter = () => {
-    const num = parseFloat(valorInserido);
+    const num = parseFloat(valorInserido.replace(',', '.'));
     if (isNaN(num) || num <= 0) {
-      Alert.alert("Aviso", "Insira um valor numérico válido.");
+      Alert.alert("Erro", "Digite um valor válido.");
       return;
     }
     if (moedaOrigem === moedaDestino) {
-      Alert.alert("Aviso", "Selecione moedas diferentes.");
+      Alert.alert("Aviso", "As moedas são iguais.");
       return;
     }
 
     const valorFinal = converter(num, moedaOrigem, moedaDestino);
     setResultado(valorFinal);
 
-    const novaEntrada = `${valorInserido} ${moedaOrigem.toUpperCase()} ➔ ${valorFinal} ${moedaDestino.toUpperCase()}`;
-    setHistorico([novaEntrada, ...historico].slice(0, 5));
+    const log = `${valorInserido} ${moedaOrigem.toUpperCase()} ➔ ${valorFinal} ${moedaDestino.toUpperCase()}`;
+    setHistorico([log, ...historico].slice(0, 5));
   };
 
   const handleSwap = () => {
@@ -37,14 +37,18 @@ export default function App() {
     setResultado(null);
   };
 
-  const reset = () => {
-    setValorInserido('');
-    setResultado(null);
-    setHistorico([]);
-  };
+  // Função crucial para renderizar o ícone em qualquer plataforma
+  const renderIcon = (moedaChave: string) => {
+    const Icone = catalogo[moedaChave]?.imagenMoeda;
+    if (!Icone) return <View style={styles.placeholderIcon} />;
 
-  const IconeDe = catalogo[moedaOrigem].imagenMoeda;
-  const IconePara = catalogo[moedaDestino].imagenMoeda;
+    // Se for uma função, é o componente SVG (Mobile)
+    if (typeof Icone === 'function') {
+      return <Icone width={50} height={50} />;
+    }
+    // Se for string ou objeto, é um asset estático (Web)
+    return <Image source={Icone} style={{ width: 50, height: 50 }} />;
+  };
 
   return (
     <View style={styles.container}>
@@ -55,7 +59,7 @@ export default function App() {
         <View style={styles.card}>
           <TextInput
             style={styles.input}
-            placeholder="Valor (0.00)"
+            placeholder="0,00"
             keyboardType="numeric"
             value={valorInserido}
             onChangeText={setValorInserido}
@@ -63,49 +67,49 @@ export default function App() {
 
           <View style={styles.selecaoRow}>
             <View style={styles.boxMoeda}>
-              <IconeDe width={50} height={50} />
+              {renderIcon(moedaOrigem)}
               <Picker
                 selectedValue={moedaOrigem}
                 onValueChange={setMoedaOrigem}
                 style={styles.picker}
               >
-                {Object.keys(catalogo).map(m => <Picker.Item key={m} label={m} value={m} />)}
+                {Object.keys(catalogo).map(m => (
+                  <Picker.Item key={m} label={m.toUpperCase()} value={m} />
+                ))}
               </Picker>
             </View>
 
             <TouchableOpacity onPress={handleSwap} style={styles.swapBtn}>
-              <Text style={{fontSize: 24}}>⇄</Text>
+              <Text style={{ fontSize: 24 }}>⇄</Text>
             </TouchableOpacity>
 
             <View style={styles.boxMoeda}>
-              <IconePara width={50} height={50} />
+              {renderIcon(moedaDestino)}
               <Picker
                 selectedValue={moedaDestino}
                 onValueChange={setMoedaDestino}
                 style={styles.picker}
               >
-                {Object.keys(catalogo).map(m => <Picker.Item key={m} label={m} value={m} />)}
+                {Object.keys(catalogo).map(m => (
+                  <Picker.Item key={m} label={m.toUpperCase()} value={m} />
+                ))}
               </Picker>
             </View>
           </View>
 
           <TouchableOpacity style={styles.btnPrincipal} onPress={handleConverter}>
-            <Text style={styles.btnText}>Converter Agora</Text>
+            <Text style={styles.btnText}>Converter</Text>
           </TouchableOpacity>
         </View>
 
         {resultado && (
           <View style={styles.cardResultado}>
-            <Text style={styles.resTexto}>Resultado: {resultado}</Text>
+            <Text style={styles.resTexto}>Total: {resultado}</Text>
           </View>
         )}
 
-        <TouchableOpacity onPress={reset} style={{marginTop: 10}}>
-          <Text style={{color: 'red', textAlign: 'center'}}>Resetar Aplicativo</Text>
-        </TouchableOpacity>
-
         <View style={styles.historico}>
-          <Text style={styles.histTitulo}>Últimas Consultas:</Text>
+          <Text style={styles.histTitulo}>Histórico:</Text>
           {historico.map((h, i) => (
             <Text key={i} style={styles.histItem}>{h}</Text>
           ))}
@@ -116,20 +120,21 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f0f2f5', paddingTop: 60 },
-  titulo: { fontSize: 26, fontWeight: 'bold', textAlign: 'center', marginBottom: 20 },
+  container: { flex: 1, backgroundColor: '#F5F7FA', paddingTop: 50 },
+  titulo: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', color: '#1A1C1E' },
   scroll: { padding: 20 },
-  card: { backgroundColor: '#fff', padding: 20, borderRadius: 15, elevation: 4 },
-  input: { fontSize: 30, textAlign: 'center', borderBottomWidth: 1, borderColor: '#ddd', marginBottom: 20 },
-  selecaoRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  boxMoeda: { flex: 1, alignItems: 'center' },
+  card: { backgroundColor: '#FFF', padding: 20, borderRadius: 20, elevation: 5 },
+  input: { fontSize: 40, textAlign: 'center', borderBottomWidth: 1, borderColor: '#E0E0E0', marginBottom: 25 },
+  selecaoRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' },
+  boxMoeda: { alignItems: 'center', width: '40%' },
   picker: { width: '100%' },
-  swapBtn: { padding: 10 },
-  btnPrincipal: { backgroundColor: '#007AFF', padding: 15, borderRadius: 10, marginTop: 20 },
-  btnText: { color: '#fff', textAlign: 'center', fontWeight: 'bold', fontSize: 16 },
-  cardResultado: { marginTop: 20, backgroundColor: '#e1ffeb', padding: 20, borderRadius: 10 },
-  resTexto: { fontSize: 22, fontWeight: 'bold', color: '#1b5e20', textAlign: 'center' },
+  swapBtn: { backgroundColor: '#F0F0F0', padding: 10, borderRadius: 50 },
+  btnPrincipal: { backgroundColor: '#0052CC', padding: 18, borderRadius: 12, marginTop: 25 },
+  btnText: { color: '#FFF', textAlign: 'center', fontWeight: 'bold', fontSize: 18 },
+  cardResultado: { marginTop: 20, backgroundColor: '#D4EDDA', padding: 20, borderRadius: 12 },
+  resTexto: { fontSize: 24, fontWeight: 'bold', color: '#155724', textAlign: 'center' },
+  placeholderIcon: { width: 50, height: 50, backgroundColor: '#EEE', borderRadius: 25 },
   historico: { marginTop: 30 },
-  histTitulo: { fontWeight: 'bold', marginBottom: 10 },
-  histItem: { backgroundColor: '#fff', padding: 10, marginBottom: 5, borderRadius: 5, color: '#666' }
+  histTitulo: { fontWeight: 'bold', fontSize: 16, marginBottom: 10 },
+  histItem: { backgroundColor: '#FFF', padding: 12, marginBottom: 8, borderRadius: 8, color: '#444' }
 });

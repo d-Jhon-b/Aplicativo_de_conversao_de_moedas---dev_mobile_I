@@ -1,6 +1,8 @@
-import { catalogo } from "../moedas"
+import { catalogo } from "../moedas";
 
-export const converter = (valor:number, de: keyof typeof catalogo, para: keyof typeof catalogo)=>{
-    const valorConvertido = ((valor/catalogo[de].taxaCambio) * catalogo[para].taxaCambio).toFixed(2)
-    return valorConvertido
-}
+export const converter = (valor: number, de: string, para: string) => {
+    if (!valor || !de || !para) return "0.00";
+    const valorEmDolar = valor / catalogo[de].taxaCambio;
+    const resultado = (valorEmDolar * catalogo[para].taxaCambio).toFixed(2);
+    return resultado;
+};
