@@ -37,16 +37,13 @@ export default function App() {
     setResultado(null);
   };
 
-  // Função crucial para renderizar o ícone em qualquer plataforma
   const renderIcon = (moedaChave: string) => {
     const Icone = catalogo[moedaChave]?.imagenMoeda;
     if (!Icone) return <View style={styles.placeholderIcon} />;
 
-    // Se for uma função, é o componente SVG (Mobile)
     if (typeof Icone === 'function') {
       return <Icone width={50} height={50} />;
     }
-    // Se for string ou objeto, é um asset estático (Web)
     return <Image source={Icone} style={{ width: 50, height: 50 }} />;
   };
 
@@ -120,21 +117,74 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F7FA', paddingTop: 50 },
-  titulo: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', color: '#1A1C1E' },
-  scroll: { padding: 20 },
-  card: { backgroundColor: '#FFF', padding: 20, borderRadius: 20, elevation: 5 },
-  input: { fontSize: 40, textAlign: 'center', borderBottomWidth: 1, borderColor: '#E0E0E0', marginBottom: 25 },
-  selecaoRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' },
-  boxMoeda: { alignItems: 'center', width: '40%' },
-  picker: { width: '100%' },
-  swapBtn: { backgroundColor: '#F0F0F0', padding: 10, borderRadius: 50 },
-  btnPrincipal: { backgroundColor: '#0052CC', padding: 18, borderRadius: 12, marginTop: 25 },
-  btnText: { color: '#FFF', textAlign: 'center', fontWeight: 'bold', fontSize: 18 },
-  cardResultado: { marginTop: 20, backgroundColor: '#D4EDDA', padding: 20, borderRadius: 12 },
-  resTexto: { fontSize: 24, fontWeight: 'bold', color: '#155724', textAlign: 'center' },
-  placeholderIcon: { width: 50, height: 50, backgroundColor: '#EEE', borderRadius: 25 },
-  historico: { marginTop: 30 },
-  histTitulo: { fontWeight: 'bold', fontSize: 16, marginBottom: 10 },
-  histItem: { backgroundColor: '#FFF', padding: 12, marginBottom: 8, borderRadius: 8, color: '#444' }
+  container: { 
+    flex: 1, 
+    backgroundColor: '#F5F7FA', 
+    paddingTop: 50 },
+  titulo: { fontSize: 28, 
+    fontWeight: 'bold', 
+    textAlign: 'center', 
+    color: '#1A1C1E' 
+  },
+  scroll: { 
+    padding: 20 },
+  card: { 
+    backgroundColor: '#FFF', 
+    padding: 20, 
+    borderRadius: 20, 
+    elevation: 5 },
+  input: { 
+    fontSize: 40, 
+    textAlign: 'center', 
+    borderBottomWidth: 1, 
+    borderColor: '#E0E0E0', 
+    marginBottom: 25 },
+    selecaoRow: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'space-around' 
+  },
+  boxMoeda: { 
+    alignItems: 'center', 
+    width: '40%' 
+  },
+  picker: { 
+    width: '100%' 
+  },
+  swapBtn: { 
+    backgroundColor: '#F0F0F0', 
+    padding: 10, 
+    borderRadius: 50 },
+  btnPrincipal: { backgroundColor: '#0052CC', 
+    padding: 18, 
+    borderRadius: 12, 
+    marginTop: 25 },
+  btnText: { color: '#FFF', 
+    textAlign: 'center', 
+    fontWeight: 'bold', fontSize: 18 },
+  cardResultado: { 
+    marginTop: 20, 
+    backgroundColor: '#D4EDDA', 
+    padding: 20, 
+    borderRadius: 12 },
+  resTexto: { 
+    fontSize: 24, 
+    fontWeight: 'bold', 
+    color: '#155724', 
+    textAlign: 'center' },
+  placeholderIcon: { 
+    width: 50, 
+    height: 50, 
+    backgroundColor: '#EEE', 
+    borderRadius: 25 },
+  historico: { 
+    marginTop: 30 },
+  histTitulo: { 
+    fontWeight: 'bold', 
+    fontSize: 16, 
+    marginBottom: 10 },
+  histItem: { backgroundColor: '#FFF', 
+    padding: 12,
+     marginBottom: 8, 
+    borderRadius: 8, color: '#444' }
 });
